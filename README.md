@@ -10,3 +10,6 @@ Current functions included in the package:
 atlantisMerged -i final_with_ice_input_v2.nc 0 -o output_f_.nc -r EA_run.prm -f EA_force.prm -p EA_physics.prm -b $PRM_FILE -h EA_harvest_nofishing.prm -s AntarcticGroups_v2_basicfoodweb.csv -d $OUTPUT_DIR -m EA_migrations.csv
 ```
 - **massplot.R**, **rel_mass_plot.R**: plotting functions for comparing output from multiple instances.
+
+## Planned updates
+- [ ] More plotting options for PREBAL checks
