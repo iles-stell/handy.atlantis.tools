@@ -13,3 +13,4 @@ atlantisMerged -i final_with_ice_input_v2.nc 0 -o output_f_.nc -r EA_run.prm -f 
 
 ## Planned updates
 - [ ] More plotting options for PREBAL checks
+- [ ] Function for automated calibration of most influential biological parameters using population algorithm
