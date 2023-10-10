@@ -81,6 +81,7 @@ rel_mass_plot <- function(base_path) {
   p <- ggplot(combined_data, aes(x = Time, y = value, color = Folder)) +
     geom_line() +
     facet_wrap(~ variable, scales = "free_y", ncol = 3) +
+    ylim(0,3) +
     theme(legend.position = "bottom") +
     guides(color = guide_legend(nrow = 10))
 

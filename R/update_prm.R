@@ -31,11 +31,11 @@ update_prm <- function(prm_file, parameter_names, new_values) {
   # Replace values in parameters of interest
   for (j in seq_along(parameter_names)) {
     parameter_name <- parameter_names[j]
-    new_value <- new_values[j]
+    new_value <- sprintf("%.9g", as.numeric(new_values[j]))  # <-- This line is changed
 
     for (i in seq_along(lines)) {
       if (grepl(paste0("^\\s*", parameter_name, "\\s"), lines[i])) {
-        pattern <- paste0("(", parameter_name, "\\s+)([0-9.]+)")
+        pattern <- paste0("(", parameter_name, "\\s+)([0-9.eE+-]+)")  # Changed this regex to capture scientific notation
         replacement <- paste0("\\1", new_value)
         lines[i] <- sub(pattern, replacement, lines[i])
         cat(paste0("Parameter '", parameter_name, "' updated to ", new_value, ".\n"))
