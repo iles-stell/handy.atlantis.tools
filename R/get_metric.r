@@ -9,75 +9,71 @@
 #' get_metric("your/output/files/path")
 
 get_metric <- function(base_path) {
-  library(xml2)
-  library(ggplot2)
-  library(readr)
-  library(dplyr)
-  library(tidyr)
 
-  getData <- function(folder) {
+
+  # getData <- function(folder) {
     
-    # Load the XML file
-    xml_files <- list.files(folder, pattern = "EA_biol.*\\.xml$", full.names = TRUE)
-    xml_data <- data.frame()
+  #   # Load the XML file
+  #   xml_files <- list.files(folder, pattern = "EA_biol.*\\.xml$", full.names = TRUE)
+  #   xml_data <- data.frame()
 
-    if (length(xml_files) > 0) {
-      xml_file <- read_xml(xml_files[1])
+  #   if (length(xml_files) > 0) {
+  #     xml_file <- read_xml(xml_files[1])
 
-      # Extract value from XML file for C and mQ
-      node_C <- xml_find_all(xml_file, "//Attribute[@AttributeName='InvertebrateClearanceRate']/GroupValue[@GroupName='ZG']")
-      attribute_value_C <- xml_attr(node_C, "AttributeValue")
+  #     # Extract value from XML file for C and mQ
+  #     node_C <- xml_find_all(xml_file, "//Attribute[@AttributeName='InvertebrateClearanceRate']/GroupValue[@GroupName='ZG']")
+  #     attribute_value_C <- xml_attr(node_C, "AttributeValue")
 
-      node_mQ <- xml_find_all(xml_file, "//Attribute[@AttributeName='FLAG_MQ_T15']/GroupValue[@GroupName='ZG']")
-      attribute_value_mQ <- xml_attr(node_mQ, "AttributeValue")
+  #     node_mQ <- xml_find_all(xml_file, "//Attribute[@AttributeName='FLAG_MQ_T15']/GroupValue[@GroupName='ZG']")
+  #     attribute_value_mQ <- xml_attr(node_mQ, "AttributeValue")
 
-      xml_data <- data.frame(
-        Folder = basename(folder),
-        C = as.numeric(attribute_value_C),
-        mQ = as.numeric(attribute_value_mQ),
-        stringsAsFactors = FALSE
-      )
-    } else {
-      warning(paste("No XML file containing 'EA_biol' found in folder:", folder))
-    }
+  #     xml_data <- data.frame(
+  #       Folder = basename(folder),
+  #       C = as.numeric(attribute_value_C),
+  #       mQ = as.numeric(attribute_value_mQ),
+  #       stringsAsFactors = FALSE
+  #     )
+  #   } else {
+  #     warning(paste("No XML file containing 'EA_biol' found in folder:", folder))
+  #   }
 
-    # RelBiomass: get the file containing "BiomIndex"
-    files <- list.files(folder, pattern = "_BiomIndx", full.names = TRUE)
+  #   # RelBiomass: get the file containing "BiomIndex"
+  #   files <- list.files(folder, pattern = "_BiomIndx", full.names = TRUE)
 
-    # Filter out NA values
-    files <- files[!is.na(files)]
+  #   # Filter out NA values
+  #   files <- files[!is.na(files)]
 
-    # Read the data from each file and combine into a single data frame
-    my_data <- lapply(files, function(file) {
-      if (file.exists(file)) {
-        read_table(file, col_names = TRUE)
-      } else {
-        warning(paste("File does not exist:", file))
-        return(data.frame()) # returns an empty dataframe if file does not exist
-      }
-    })
+  #   # Read the data from each file and combine into a single data frame
+  #   my_data <- lapply(files, function(file) {
+  #     if (file.exists(file)) {
+  #       read_table(file, col_names = TRUE)
+  #     } else {
+  #       warning(paste("File does not exist:", file))
+  #       return(data.frame()) # returns an empty dataframe if file does not exist
+  #     }
+  #   })
 
-    my_data <- bind_rows(my_data)
-    if (nrow(my_data) == 0) return(list(xml_data = xml_data, biom_data = NULL))
+  #   my_data <- bind_rows(my_data)
+  #   if (nrow(my_data) == 0) return(list(xml_data = xml_data, biom_data = NULL))
 
-    my_data2 <- my_data %>%
-      group_by(Time) %>%
-      summarise_all(mean, na.rm = TRUE)
+  #   my_data2 <- my_data %>%
+  #     group_by(Time) %>%
+  #     summarise_all(mean, na.rm = TRUE)
 
-    # Convert the wide format to a long format
-    my_data2_long <- my_data2 %>%
-      gather(key = "variable", value = "value", -Time)
+  #   # Convert the wide format to a long format
+  #   my_data2_long <- my_data2 %>%
+  #     gather(key = "variable", value = "value", -Time)
 
-    my_data2_long$Folder <- basename(folder)
+  #   my_data2_long$Folder <- basename(folder)
 
-    list(xml_data = xml_data, biom_data = my_data2_long)
-  }
+  #   list(xml_data = xml_data, biom_data = my_data2_long)
+  # }
 
-  out_folders <- list.dirs(path = base_path, full.names = TRUE, recursive = FALSE)
-  out_folders <- out_folders[grepl("output", basename(out_folders))]
+  # out_folders <- list.dirs(path = base_path, full.names = TRUE, recursive = FALSE)
+  # out_folders <- out_folders[grepl("output", basename(out_folders))]
 
-  # Get data from all folders
-  all_data <- lapply(out_folders, getData)
+  # # Get data from all folders
+  # all_data <- lapply(out_folders, getData)
 
   # Separate the xml and biom data into different lists
   xml_data_list <- lapply(all_data, `[[`, "xml_data")
@@ -117,5 +113,10 @@ get_metric <- function(base_path) {
 
   metrics_data <- list(xml_data = combined_xml_data, biom_data = combined_biom_data)
 
-  return(metrics_data)
+  biomass_data <- metrics_data$biom_data
+  param_data <- metrics_data$xml_data
+
+  combined_data <- inner_join(biomass_data, param_data, by = "Folder")
+  
+  return(combined_data)
 }

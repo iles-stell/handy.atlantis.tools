@@ -6,13 +6,14 @@
 #' @param prm_file the bgm file that contains the parameter you want to change. Write as "bgm_file.prm"
 #' @param parameter_name the parameter that you want to change. Write as "parameter_name"
 #' @param new_value the new value for the parameter
+#' @param output_file_name customised name to be appended to original file name. Write as "output_file_name"
 #'
 #' @return An updated bgm file with a new value for the parameter of interest
 #' @export
 #' @examples
-#' update_prm(biology.prm, ecotest, 0)
+#' update_prm(biology.prm, ecotest, 0, "TEST")
 
-update_prm <- function(prm_file, parameter_names, new_values) {
+update_prm <- function(prm_file, parameter_names, new_values, output_file_name = NULL) {
   # Ensure parameter_names and new_values have the same length
   if (length(parameter_names) != length(new_values)) {
     stop("The number of parameter names and values provided do not match.")
@@ -55,14 +56,18 @@ update_prm <- function(prm_file, parameter_names, new_values) {
   #   dir.create(new_folder)
   # }
 
-  # Generate a new file name to save the updated content with details of the changes
-  base_name <- gsub("\\.[a-z]+$", "", basename(prm_file))
-  change_details <- paste(sapply(1:length(parameter_names), function(i) {
-    paste0("_", parameter_names[i], "_", new_values[i])
-  }), collapse = "")
-  new_file_name <- file.path(prm_file_path, paste0(base_name, change_details, ".prm"))
+  # Generate a new file name if not provided by the user
+  if (is.null(output_file_name)) {
+    base_name <- gsub("\\.[a-z]+$", "", basename(prm_file))
+    change_details <- paste(sapply(1:length(parameter_names), function(i) {
+      paste0("_", parameter_names[i], "_", new_values[i])
+    }), collapse = "")
+    output_file_name <- paste0(base_name, change_details, ".prm")
+  }
 
   # Write the modified content back to the new PRM file
-  writeLines(lines, new_file_name)
-  cat(paste0("Updated file saved as '", new_file_name, "'.\n"))
+  base_name <- gsub("\\.[a-z]+$", "", basename(prm_file))
+  new_file_path <- file.path(prm_file_path, paste0(base_name, "_", output_file_name))
+  writeLines(lines, new_file_path)
+  cat(paste0("Updated file saved as '", new_file_path, "'.\n"))
 }
