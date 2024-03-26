@@ -4,10 +4,12 @@
 \alias{update_prm}
 \title{update_prm}
 \usage{
-update_prm(prm_file, parameter_names, new_values)
+update_prm(prm_file, parameter_names, new_values, output_file_name = NULL)
 }
 \arguments{
 \item{prm_file}{the bgm file that contains the parameter you want to change. Write as "bgm_file.prm"}
+
+\item{output_file_name}{customised name to be appended to original file name. Write as "output_file_name"}
 
 \item{parameter_name}{the parameter that you want to change. Write as "parameter_name"}
 
@@ -21,5 +23,5 @@ Change parameter value in a bgm file for the Atlantis model.
 The function does not overwrite the old file, but creates a new one with details of the change in its name.
 }
 \examples{
-update_prm(biology.prm, ecotest, 0)
+update_prm(biology.prm, ecotest, 0, "TEST")
 }

@@ -1,6 +1,7 @@
 #' optimise_bayesian
 
 
+
 optimise_bayesian  <- function(combined_data) {
   # Define Bayesian regression model
   model  <- brms::brm(
