@@ -1,4 +1,5 @@
 #' run_docker_sql
+#' @export
 
 run_docker_sql <- function(local_path_to_prm_files, docker_image, db_path) {
   library(RSQLite)
