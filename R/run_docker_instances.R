@@ -57,3 +57,32 @@ run_docker_instances <- function(local_path_to_prm_files, docker_image) {
 
   }
 }
+
+runthisfile <- function(prm_file, docker_image) {
+  setwd("C:/Users/ilarias/OneDrive - University of Tasmania/AtlantisRepository/EA_model/EA_29poly/")
+  Sys.setenv(PRM_FILE = prm_file)
+  # Create a unique name for output directory
+  sanitized_prm_name <- gsub("[^a-zA-Z0-9_.-]",
+   "", prm_file) # Sanitizing the .prm file name
+   sanitized_prm_name <- gsub("\\.prm$",
+   "", sanitized_prm_name) # Removing .prm from the name
+
+  output_dir <- paste0("output_EA_", format(Sys.time(), "%Y%m%d"), "_", sanitized_prm_name)
+  Sys.setenv(OUTPUT_DIR = output_dir) # env variable
+
+  # Unique container name
+  unique_name <- paste0("c_", format(Sys.time(), "%Y%m%d"), "_", sanitized_prm_name)
+
+  # Forming the command to run the Docker container
+  docker_command <- sprintf(
+    'docker run --name %s -d -e PRM_FILE="%s" -e OUTPUT_DIR="%s" -v "%s:/app/model" %s',
+    unique_name,
+    prm_file,  # pass the environment variable
+    output_dir,  # environment variable
+    local_path_to_prm_files,
+    docker_image
+    )
+
+  cat("Running command: ", docker_command, "\n")
+  system(docker_command)
+}
