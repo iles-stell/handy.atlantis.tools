@@ -1,3 +1,6 @@
+#' Biomass_analysis function
+#' #' @export
+
 biomass_analysis <- function(base_path, baseline_output) {
   library(ggplot2)
   library(readr)
