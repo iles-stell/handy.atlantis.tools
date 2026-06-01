@@ -3,6 +3,7 @@ biomass_analysis <- function(base_path, baseline_output) {
   library(readr)
   library(dplyr)
   library(tidyr)
+  library(handy.atlantis) # run command install_github("iles-stell/handy.atlantis")
 
   getData <- function(folder) {
     subfolders <- list.dirs(folder, recursive = TRUE, full.names = TRUE)
